@@ -130,7 +130,7 @@ SELECT u.user_id as buyer_id, u.join_date, count(o.order_id) as 'orders_in_2019'
 FROM Users u
 LEFT JOIN Orders o
 ON o.buyer_id=u.user_id AND YEAR(order_date)='2019'
-GROUP BY u.user_id
+GROUP BY u.user_id -- my sql만 가능함, sql표준모드에서는 비집계칼럼이 그룹바이에 다 들어가 있어야 함
 
 
 
