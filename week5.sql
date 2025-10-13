@@ -109,7 +109,7 @@ SELECT CASE WHEN investments.investor_name IS NULL THEN 'No Investors' --투자�
  ORDER BY 2 DESC --투자자가 많은 회사부터 적은 회사 순으로 정렬
 
 -- 16. SQL FULL OUTER JOIN
-/* 1. (= FULL JOIN) 일반적으로 집계와 함께 사용되어 두 테이블 간의 겹치는 정도를 파악하는 데 사용됨
+/* 1. (= FULL JOIN) 일반적으로 집계와 함께 사용되어 두 테이블 간의 겹치는 정도를 파악하는 데 사용됨*/
 
 SELECT COUNT(CASE WHEN companies.permalink IS NOT NULL AND acquisitions.company_permalink IS NULL
                   THEN companies.permalink ELSE NULL END) AS companies_only,
