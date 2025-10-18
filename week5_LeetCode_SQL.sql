@@ -1,51 +1,26 @@
 -- 1164. Product Price at a Given Date
--- 문제: You are the restaurant owner and you want to analyze a possible expansion (there will be at least one customer every day). (매일 최소 한 명의 고객이 있음)
-Compute the moving average of how much the customer paid in a seven days window (i.e., current day + 6 days before). average_amount should be rounded to two decimal places. (고객이 7일 동안 지불한 금액의 이동평균을 계산해라,현재날짜+6일전, 평균금액 소수점 두 자리로 반올림)
-Return the result table ordered by visited_on in ascending order.(visited_on 오름차순 정렬)
+/*문제: Initially, all products have price 10. (처음가격은 10)
+Write a solution to find the prices of all products on the date 2019-08-16. (19/08/16에 가격 구하기)
+Return the result table in any order. */
 
---윈도우함수, 현재행부터 6일전까지 더 함(ROWS말고 RANGE사용)
---DATEDIFF(날짜1,날짜2)=> 날짜1-날짜2
-
---sol1
-SELECT visited_on, amount, average_amount 
-FROM (SELECT DISTINCT visited_on, SUM(amount) OVER
- (ORDER BY visited_on RANGE BETWEEN INTERVAL 6 DAY PRECEDING AND CURRENT ROW) AS amount,
-  ROUND(SUM(amount) OVER (ORDER BY visited_on RANGE BETWEEN INTERVAL 6 DAY PRECEDING AND CURRENT ROW)/7,2)
-   AS average_amount
-FROM Customer) as whole_totals
-WHERE DATEDIFF(visited_on, (SELECT MIN(visited_on) FROM Customer)) >= 6
-
--sol2
-SELECT DISTINCT
-    visited_on,
-    SUM(amount) OVER w AS amount,
-    ROUND((SUM(amount) OVER w) / 7, 2) AS average_amount
-FROM customer
-WINDOW w AS (
-    ORDER BY visited_on
-    RANGE BETWEEN INTERVAL 6 DAY PRECEDING AND CURRENT ROW
-)
-LIMIT 6, 999;
-
---LIMIT[offset], [row_count] : [건너뛸 행의 개수], [그 다음부터 보여줄 최개 행의 개수]
-/*윈도우함수: 
-윈도우함수(인수) OVER (
-    [ PARTITION BY partition_cols ]
-    [ ORDER BY order_cols ]
-    [ WINDOWING 절: ROWS / RANGE … ]
-)
-PARTITION BY : 데이터를 그룹 단위로 나눔 (그룹별 따로 계산)
-ORDER BY : 파티션 내에서 정렬 기준
-WINDOWING (또는 범위 지정 절) : 현재 행 기준 어느 범위를 볼지 지정 (예: 앞의 5행까지 등)
-WINDOWING 절 종류
-ROWS BETWEEN … : 물리적 행 수 기준
-RANGE BETWEEN … : 값의 범위 기준 */ 
+SELECT product_id, 10 AS price
+FROM Products
+GROUP BY product_id
+HAVING MIN(change_date) > '2019-08-16'
+UNION ALL
+SELECT product_id, new_price AS price
+FROM Products
+WHERE (product_id, change_date) IN (
+  SELECT product_id, MAX(change_date)
+  FROM Products
+  WHERE change_date <= '2019-08-16'
+  GROUP BY product_id)
 
 
 -- 1174. Immediate Food Delivery II
--- 문제: If the customer's preferred delivery date is the same as the order date, then the order is called immediate; otherwise, it is called scheduled. (고객이 선호하는 날짜=배송날짜 -> 주문을 즉시 처리, !=>예약처리)
+/*문제: If the customer's preferred delivery date is the same as the order date, then the order is called immediate; otherwise, it is called scheduled. (고객이 선호하는 날짜=배송날짜 -> 주문을 즉시 처리, !=>예약처리)
 The first order of a customer is the order with the earliest order date that the customer made. It is guaranteed that a customer has precisely one first order. (고객의 첫번째 주문은 고객이 가장 먼저 주문한 날짜가 있는 주문임. 고객은 정확히 한번의 첫번째 주문을 가지고 있음)
-Write a solution to find the percentage of immediate orders in the first orders of all customers, rounded to 2 decimal places. (모든 고객의 첫번째 주문에서 즉시 주문의 비율을 구해라. 소수점 2자리까지 반올림)
+Write a solution to find the percentage of immediate orders in the first orders of all customers, rounded to 2 decimal places. (모든 고객의 첫번째 주문에서 즉시 주문의 비율을 구해라. 소수점 2자리까지 반올림)*/
 
 /*1. 고객별 첫번째 주문 날짜 필터링하기
 2. 첫번째 날짜=선호날짜 같은 수 찾기
@@ -75,8 +50,8 @@ WHERE (customer_id, order_date) IN (
 );
 
 -- 1193. Monthly Transactions I
--- 문제:Write an SQL query to find for each month and country, the number of transactions and their total amount, the number of approved transactions and their total amount. (월별 및 국가별로 거래 수와 총액, 승인된 거래 수와 총액을 찾아라
-Return the result table in any order. 
+/*문제:Write an SQL query to find for each month and country, the number of transactions and their total amount, the number of approved transactions and their total amount. (월별 및 국가별로 거래 수와 총액, 승인된 거래 수와 총액을 찾아라
+Return the result table in any order. */
 
 /*1. 월별, 국가별로 그룹바이하기
 2. select절에서 집계하기 */ 
@@ -134,9 +109,9 @@ ORDER BY cumulative_weight DESC
 LIMIT 1;
 
 -- 1321. Restaurant Growth
--- 문제: You are the restaurant owner and you want to analyze a possible expansion (there will be at least one customer every day). (레스토랑 가능한 확장 분석할거임. 매일 최소 한 명의 고객있음)
+/*문제: You are the restaurant owner and you want to analyze a possible expansion (there will be at least one customer every day). (레스토랑 가능한 확장 분석할거임. 매일 최소 한 명의 고객있음)
 Compute the moving average of how much the customer paid in a seven days window (i.e., current day + 6 days before). average_amount should be rounded to two decimal places. (고객이 7일동안 지불한 금액의 이동평균을 계산해라. average_amount 소수점 두 자리로 반올림) 
-Return the result table ordered by visited_on in ascending order. (visited_on 오름차순 정렬)
+Return the result table ordered by visited_on in ascending order. (visited_on 오름차순 정렬)*/
 
 --sol1 윈도우함수
 -- 현재 날짜 기준으로 이전 6일~현재까지의 기간(=7일간) 누적합 계산
@@ -162,7 +137,19 @@ WINDOW w AS (
             range between interval 6 day PRECEDING and current row )
 Limit 6, 999  -- 결과 출력 시 처음 6행은 건너뛰고 7번째 행부터 출력
 
-
+--LIMIT[offset], [row_count] : [건너뛸 행의 개수], [그 다음부터 보여줄 최개 행의 개수]
+/*윈도우함수: 
+윈도우함수(인수) OVER (
+    [ PARTITION BY partition_cols ]
+    [ ORDER BY order_cols ]
+    [ WINDOWING 절: ROWS / RANGE … ]
+)
+PARTITION BY : 데이터를 그룹 단위로 나눔 (그룹별 따로 계산)
+ORDER BY : 파티션 내에서 정렬 기준
+WINDOWING (또는 범위 지정 절) : 현재 행 기준 어느 범위를 볼지 지정 (예: 앞의 5행까지 등)
+WINDOWING 절 종류
+ROWS BETWEEN … : 물리적 행 수 기준
+RANGE BETWEEN … : 값의 범위 기준 */ 
 
 
 
