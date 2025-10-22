@@ -64,7 +64,7 @@ FROM accounts)
 --1934. Confirmation Rate
 /*문제: The confirmation rate of a user is the number of 'confirmed' messages divided by the total number of requested confirmation messages. The confirmation rate of a user that did not request any confirmation messages is 0. Round the confirmation rate to two decimal places. ( 사용자의 확인율은 확인된 메세지의 수를 요청된 확인 메세지 수로 나눈 값임, 확인메세지를 요청하지 않은 사용자의 확인율은 0임. 확인율을 소수점 두자리로 반올림)
 Write a solution to find the confirmation rate of each user. (각 사용자의 확인률을 찾아라)
-Return the result table in any order. 
+Return the result table in any order. */
 
 
 SELECT s.user_id, round(avg(if(c.action="confirmed",1,0)),2) as confirmation_rate
